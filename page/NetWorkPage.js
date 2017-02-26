@@ -12,7 +12,7 @@ export default class NetWorkPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content:'Wait....'
+      content:'wait for more data...'
     }
   }
   _buttonClick(){
