@@ -10,6 +10,7 @@ import {
 import HomePage from './HomePage.js';
 import AnimationPage from './AnimationPage.js';
 import NetWorkPage from './NetWorkPage.js';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 export default class MainPage extends Component{
 constructor(props){
@@ -46,23 +47,23 @@ constructor(props){
       unselectedTintColor = '#2c2c2c'
       tintColor = '#d81e06'
       barTinyColor='darkslateblue'>
-      <TabBarIOS.Item
-        icon={require('./img/HomeNomarl.png')}
-        selectedIcon={require('./img/HomeSelected.png')}
+      <Icon.TabBarItem
+        iconName = "ios-home-outline"
+        selectedIconName = "ios-home"
         renderAsOriginal
         selected={this.state.selectedTab === 'blueTab'}
-        title='主页'
+        title="Home"
         onPress={() => {
               this.setState({
                 selectedTab:'blueTab',
               });
             }}>{this._renderContent('#414A92','Blue Tab')}
-      </TabBarIOS.Item>
+      </Icon.TabBarItem>
 
-      <TabBarIOS.Item
-        title='发现'
-        icon={require('./img/findNormal.png')}
-        selectedIcon={require('./img/findSelected.png')}
+      <Icon.TabBarItem
+        title = "Cloud"
+        iconName = "ios-cloud-outline"
+        selectedIconName = "ios-cloud"
         badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
         selected={this.state.selectedTab === 'redTab'}
         onPress= {()=>{
@@ -71,12 +72,12 @@ constructor(props){
             notifCount: this.state.notifCount + 1
           });
         }}>{this._renderAnimation()}
-        </TabBarIOS.Item>
+        </Icon.TabBarItem>
 
-        <TabBarIOS.Item
-          title='More'
-          icon={require('./img/moreNormal.png')}
-          selectedIcon={require('./img/moreSelected.png')}
+        <Icon.TabBarItem
+          title = "Me"
+          iconName = "ios-person-outline"
+          selectedIconName = "ios-person"
           selected={this.state.selectedTab === 'greenTab'}
           onPress={ () => {
             this.setState({
@@ -85,7 +86,7 @@ constructor(props){
             });
           }}
           >{this._renderNetWork()}
-        </TabBarIOS.Item>
+        </Icon.TabBarItem>
     </TabBarIOS>
     );
   }
