@@ -5,6 +5,7 @@ import {
   Text,
   Button,
   ListView,
+  Image,
   NavigationBar,
   Navigator,
   TouchableHighlight,
@@ -35,6 +36,8 @@ export default class NetWorkPage extends Component {
     })
   };
 
+
+
   render(){
     return(
       <Navigator
@@ -45,15 +48,30 @@ export default class NetWorkPage extends Component {
   }
 }
 
+
+
 class NetView extends Component {
   constructor(props) {
     super(props);
   }
 
+  leftBarbuttonAction = ()=>{
+
+    console.log('来这儿了');
+
+  };
+
+
   render(){
     return(
       <View style = {styles.container}>
-        <MSNavBar barTinColor="#3ddfa0"/>
+
+        <MSNavBar
+          barTinColor ="#3ddfa0"
+          title = "BanTang"
+          leftImage = "ios-aperture"
+          leftAction = {()=>this.leftBarbuttonAction()}
+        />
       </View>
     );
   }
