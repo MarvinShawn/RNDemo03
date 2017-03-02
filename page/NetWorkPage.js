@@ -8,12 +8,13 @@ import {
   Image,
   NavigationBar,
   Navigator,
+  TouchableOpacity,
   TouchableHighlight,
   StyleSheet,
 } from 'react-native'
 
 import MSNavBar from './CustomView/MSNavBar.js';
-
+import '../page/GlobalVar/GlobalConstVar.js';
 export default class NetWorkPage extends Component {
   constructor(props) {
     super(props);
@@ -48,33 +49,63 @@ export default class NetWorkPage extends Component {
   }
 }
 
-
+var arr = ['H1','H2','H3','H4'];
 
 class NetView extends Component {
+
   constructor(props) {
+
     super(props);
+    var ds = new ListView.DataSource({rowHasChanged:(r1,r2)=>r1 !== r2});
+
+    this.state = {
+        dataSource:ds.cloneWithRows(arr),
+    }
   }
 
   leftBarbuttonAction = ()=>{
-
     console.log('来这儿了');
+    this.refs.NavBar.setState({
+      color:'#ab2626'
+    });
 
   };
 
+  //cell布局
+  _renderRow = (rowData,sectionID,rowID) => {
+    return(
+      <TouchableOpacity  >
+      <View style = {styles.cellStyle}>
+        <Image style = {styles.imageSize} source={require('../page/img/cellImage.png')}/>
+      </View>
+      </TouchableOpacity>
+    );
+  };
 
   render(){
     return(
       <View style = {styles.container}>
-
         <MSNavBar
+          ref = "NavBar"
           barTinColor ="#3ddfa0"
           title = "BanTang"
           leftImage = "ios-aperture"
           leftAction = {()=>this.leftBarbuttonAction()}
         />
+        <ListView
+          automaticallyAdjustContentInsets={false} //自动偏移20像素的原因
+          style= { styles.listView }
+          dataSource={this.state.dataSource}
+          renderRow= {this._renderRow}
+
+        />
       </View>
     );
   }
+
+
+
+
 
 }
 
@@ -84,5 +115,17 @@ const styles = StyleSheet.create({
     flexDirection:'column',
     backgroundColor:'white',
   },
+  listView:{
+    backgroundColor:'orange'
+  },
+  cellStyle:{
+    flex:1,
+    flexDirection:'column',
+    backgroundColor:'gray'
+  },
+  imageSize:{
+    width:global.constants.windowWidth,
+    height:global.constants.windowWidth*0.8,
+  }
 
 });
