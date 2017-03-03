@@ -114,7 +114,7 @@ class MyScene extends Component {
             refreshControl={<RefreshControl
                 refreshing = {this.state.isRefreshing}
                 onRefresh = {()=>this._onRefresh()}
-                tintCOlor = "#FF0000"
+                tintColor = "#FF0000"
                 title = "加载中"
             />}
         >

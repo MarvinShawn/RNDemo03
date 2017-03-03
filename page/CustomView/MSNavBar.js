@@ -19,7 +19,6 @@ export default class MSNavBar extends Component {
     super(props);
     this.state = {
       color:undefined,
-
     }
   }
 
