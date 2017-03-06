@@ -8,6 +8,7 @@ import {
   Image,
   RefreshControl,
   NavigationBar,
+  WebView,
   Navigator,
   TouchableOpacity,
   TouchableHighlight,
@@ -17,11 +18,46 @@ import {
 import MSNavBar from './CustomView/MSNavBar.js';
 import '../page/GlobalVar/GlobalConstVar.js';
 import Swiper from 'react-native-swiper';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+// 导航栏的Mapper
+var NavigationBarRouteMapper = {
+  // 左键
+  LeftButton(route, navigator, index, navState) {
+
+    if (index > 0) {
+      return(
+        <View style = {{flex:1,alignItems:'center',justifyContent:'center',marginLeft:10}}>
+          <TouchableOpacity
+            onPress = {()=>{if (index > 0) {
+              navigator.pop()
+            }}}>
+            <Icon name = "ios-arrow-back" size = {25}/>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  },
+  // 右键
+  RightButton(route, navigator, index, navState) {
+    // ...
+  },
+  // 标题
+  Title(route, navigator, index, navState) {
+    return (
+      <View style = {{flex:1,alignItems:'center',justifyContent:'center'}}>
+        <Text style={{color:'black',fontSize:17}}>
+          {route.name}
+        </Text>
+      </View>
+    );
+  }
+};
+
 export default class NetWorkPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
     }
   }
 
@@ -29,7 +65,23 @@ export default class NetWorkPage extends Component {
     return(
       <Navigator
         initialRoute = {{name:'BanTang',index:0}}
-        renderScene = {(route,navigator) => <NetView />}
+        renderScene = {(route,navigator) => {
+            switch (route.name) {
+              case 'BanTang':
+                return <NetView navigator = {navigator}/>
+                break;
+              case 'DetailPage':
+                return <DetailPage navigator = {navigator} contentID = {route.passProps.contentID}/>
+                break;
+              default:
+            }
+        }}
+         navigationBar = {
+           <Navigator.NavigationBar
+              style = {styles.navigationBar}
+              routeMapper = {NavigationBarRouteMapper}
+           />
+         }
       />
     );
   }
@@ -66,14 +118,34 @@ class NetView extends Component {
   };
   //header 点击事件
   _headerAction = (source) => {
-    alert(source['title']);
+    const {navigator} = this.props
+    var contentID = source['id']
+    navigator.push({
+      name:'DetailPage',
+      passProps:{
+        contentID:contentID
+      }
+
+    })
   };
 
+//cell的点击事件
+  _cellAction = (index) => {
+    const {navigator} = this.props;
+    var contentID = this.arr[index]['id']
+    navigator.push({
+        name:'DetailPage',
+        passProps:{  //传递的参数
+          contentID:contentID
+        }
+    })
+
+  };
 
   //cell布局
   _renderRow = (rowData,sectionID,rowID) => {
     return(
-      <TouchableHighlight >
+      <TouchableHighlight onPress = {() => this._cellAction(rowID)}>
       <View style = {styles.cellStyle}>
         <Image style = {styles.imageSize} source={{uri:this.arr[rowID]['pic']}}/>
         <Text style = {styles.TextStyle1}>{this.arr[rowID]['title']}</Text>
@@ -198,13 +270,6 @@ class NetView extends Component {
   render(){
     return(
       <View style = {styles.container}>
-        <MSNavBar
-          ref = "NavBar"
-          barTinColor ="#3ddfa0"
-          title = "BanTang"
-          leftImage = "ios-aperture"
-          leftAction = {()=>this.leftBarbuttonAction()}
-        />
         <ListView
           ref = "listView"
           refreshControl={<RefreshControl
@@ -227,12 +292,31 @@ class NetView extends Component {
       </View>
     );
   }
-
-
-
-
-
 }
+
+
+
+class DetailPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    }
+  }
+
+  render(){
+    const {contentID} = this.props;//解构
+    return(
+      <View style = {styles.detailPageStyle}>
+        <WebView
+          automaticallyAdjustContentInsets={false}
+          source = {{uri:"http://m.ibantang.com/topic/"+contentID}}
+        />
+      </View>
+    );
+  }
+}
+
+
 
 
 const refreshType = {
@@ -241,12 +325,17 @@ const refreshType = {
 };
 
 const styles = StyleSheet.create({
+  navigationBar:{
+    backgroundColor:'#FEDCBA',
+    height:64
+  },
   container:{
     flex:1,
     flexDirection:'column',
     backgroundColor:'white',
   },
   listView:{
+    marginTop:64,
     backgroundColor:'white',
     marginBottom:49
   },
@@ -281,7 +370,11 @@ const styles = StyleSheet.create({
     resizeMode:'contain',
     width:global.constants.windowWidth,
     height:200
+  },
+  detailPageStyle:{
+    marginTop:64,
+    marginBottom:49,
+    flex:1,
+    backgroundColor:'#ABCDEF'
   }
-
-
 });
