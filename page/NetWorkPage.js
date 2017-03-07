@@ -6,6 +6,7 @@ import {
   Button,
   ListView,
   Image,
+  Switch,
   RefreshControl,
   NavigationBar,
   WebView,
@@ -19,6 +20,7 @@ import MSNavBar from './CustomView/MSNavBar.js';
 import '../page/GlobalVar/GlobalConstVar.js';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Toast,{DURATION} from 'react-native-easy-toast';
 
 // 导航栏的Mapper
 var NavigationBarRouteMapper = {
@@ -71,7 +73,7 @@ export default class NetWorkPage extends Component {
                 return <NetView navigator = {navigator}/>
                 break;
               case 'DetailPage':
-                return <DetailPage navigator = {navigator} contentID = {route.passProps.contentID}/>
+                return <DetailPage navigator = {navigator} contentID = {route.passProps.contentID} likeAction = {route.passProps.likeAction} isLike = {route.passProps.isLike}/>
                 break;
               default:
             }
@@ -129,6 +131,11 @@ class NetView extends Component {
     })
   };
 
+
+  _likeAction = (index,isLike)=>{
+      this.arr[index]['islike'] = isLike;
+  }
+
 //cell的点击事件
   _cellAction = (index) => {
     const {navigator} = this.props;
@@ -136,10 +143,13 @@ class NetView extends Component {
     navigator.push({
         name:'DetailPage',
         passProps:{  //传递的参数
-          contentID:contentID
+          contentID:contentID,
+          likeAction:((isLike)=>{  //闭包 ，传给DetailPage，DetailPage在那边调用
+            this._likeAction(index,isLike)
+          }),
+          isLike:this.arr[index]['islike'],
         }
     })
-
   };
 
   //cell布局
@@ -149,7 +159,10 @@ class NetView extends Component {
       <View style = {styles.cellStyle}>
         <Image style = {styles.imageSize} source={{uri:this.arr[rowID]['pic']}}/>
         <Text style = {styles.TextStyle1}>{this.arr[rowID]['title']}</Text>
-        <Text style = {styles.TextStyle2}>💗{this.arr[rowID]['likes']}</Text>
+        <View style = {{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+          <Icon name = {this.arr[rowID]['islike'] === false ?"ios-heart-outline":"ios-heart"} size = {20} style = {{marginTop:4}}/>
+          <Text style = {[styles.TextStyle2,{marginLeft:10}]}>{this.arr[rowID]['likes']}</Text>
+        </View>
       </View>
       </TouchableHighlight>
     );
@@ -279,8 +292,6 @@ class NetView extends Component {
               title = "加载中"
           />}
           scrollsToTop = {true}
-          // onEndReached = {this._onEndReached()}
-          // onEndReachedThreshold={20} //调用onEndReached之前的临界值
           automaticallyAdjustContentInsets={false} //自动偏移20像素的原因
           style= { styles.listView }
           dataSource={this.state.dataSource}
@@ -295,21 +306,42 @@ class NetView extends Component {
 }
 
 
-
 class DetailPage extends Component {
   constructor(props) {
     super(props);
+    const {isLike} = this.props
     this.state = {
+      switchState:isLike,
     }
   }
 
+
   render(){
-    const {contentID} = this.props;//解构
+    const {contentID,likeAction,isLike} = this.props;//解构
     return(
       <View style = {styles.detailPageStyle}>
+        <Switch
+          style = {{alignSelf:'center'}}
+           onValueChange = {(value)=>{
+             if (value) {
+               this.refs.toast.show('您关注了该物品')
+               likeAction(value)
+             }
+             this.setState({
+               switchState:value,
+             })
+           }}
+           value = {this.state.switchState}>
+        </Switch>
         <WebView
           automaticallyAdjustContentInsets={false}
           source = {{uri:"http://m.ibantang.com/topic/"+contentID}}
+        />
+        <Toast ref = "toast"
+          style = {{backgroundColor:'#e00f7a'}}
+          opacity = {0.8}
+          position = 'center'
+
         />
       </View>
     );
