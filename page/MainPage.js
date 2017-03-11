@@ -10,35 +10,43 @@ import {
 import HomePage from './HomePage.js';
 import AnimationPage from './AnimationPage.js';
 import NetWorkPage from './NetWorkPage.js';
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons/Ionicons';
+import TodolistPage from './ToDoListPage.js';
 
 export default class MainPage extends Component{
 constructor(props){
   super(props);
   this.state = {
-    selectedTab:'blueTab',
-    notifCount:0,
-    presses:0,
+    homeFlag:true,
+    cloudFlag:false,
+    meFlag:false,
+    todoFlag:false
   }
 }
 
 
-    _renderContent(color:string,pageText:string,num?:number){
+    _renderContent = () => {
       return (
         <HomePage />
       );
-    }
+    };
 
-    _renderAnimation(){
+    _renderAnimation = () => {
       return (
           <AnimationPage />
       );
-    }
-    _renderNetWork(){
+    };
+    _renderNetWork = () => {
         return(
           <NetWorkPage />
         );
-    }
+    };
+
+    _renderToDolist = ()=>{
+      return(
+          <TodolistPage />
+      );
+    };
 
 
   render(){
@@ -51,13 +59,16 @@ constructor(props){
         iconName = "ios-home-outline"
         selectedIconName = "ios-home"
         renderAsOriginal
-        selected={this.state.selectedTab === 'blueTab'}
+        selected={this.state.homeFlag}
         title="Home"
         onPress={() => {
               this.setState({
-                selectedTab:'blueTab',
+                homeFlag:true,
+                cloudFlag:false,
+                meFlag:false,
+                todoFlag:false
               });
-            }}>{this._renderContent('#414A92','Blue Tab')}
+            }}>{this._renderContent()}
       </Icon.TabBarItem>
 
       <Icon.TabBarItem
@@ -65,11 +76,13 @@ constructor(props){
         iconName = "ios-cloud-outline"
         selectedIconName = "ios-cloud"
         badge={this.state.notifCount > 0 ? this.state.notifCount : undefined}
-        selected={this.state.selectedTab === 'redTab'}
+        selected={this.state.cloudFlag}
         onPress= {()=>{
           this.setState({
-            selectedTab:'redTab',
-            notifCount: this.state.notifCount + 1
+            homeFlag:false,
+            cloudFlag:true,
+            meFlag:false,
+            todoFlag:false
           });
         }}>{this._renderAnimation()}
         </Icon.TabBarItem>
@@ -78,15 +91,34 @@ constructor(props){
           title = "Me"
           iconName = "ios-person-outline"
           selectedIconName = "ios-person"
-          selected={this.state.selectedTab === 'greenTab'}
+          selected={this.state.meFlag}
           onPress={ () => {
             this.setState({
-              selectedTab: 'greenTab',
-              presses: this.state.presses + 1
+              homeFlag:false,
+              cloudFlag:false,
+              meFlag:true,
+              todoFlag:false
             });
           }}
           >{this._renderNetWork()}
         </Icon.TabBarItem>
+
+      <Icon.TabBarItem
+        title = "ToDo"
+        iconName = "ios-timer-outline"
+        selectedIconName = "ios-timer"
+        selected = {this.state.todoFlag}
+        onPress={ () => {
+          this.setState({
+            homeFlag:false,
+            cloudFlag:false,
+            meFlag:false,
+            todoFlag:true,
+          })
+        }}
+        >{this._renderToDolist()}
+      </Icon.TabBarItem>
+
     </TabBarIOS>
     );
   }
